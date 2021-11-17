@@ -3,3 +3,6 @@
 ---
 - The app is bootstraped with create-react-app with typescript template
 - For managing state i employed redux-toolkit
+
+---
+![screen](./Capture.PNG)
