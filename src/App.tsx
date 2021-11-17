@@ -1,55 +1,70 @@
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import "./App.css";
+import { v4 as uuidv4 } from 'uuid';
+
 import { RootState } from "./app/store";
-import CustomerCard from "./components/CustomerCard";
-import ResevartionCard from "./components/ResevartionCard";
-import { addReservation } from "./features/reservationSlice";
+import TranscationCard from "./components/TransactionCard";
+import { addBalance, deduceBalance } from "./features/balanceSlice";
+import {addTransaction} from "./features/transactionSlice"
+import "./App.css";
 
 function App() {
-  const [reservationNameInput, setReservationNameInput] = useState("");
-
-  const resevartions = useSelector(
-    (state: RootState) => state.reservations.value
-  );
-
-  const customers = useSelector(
-    (state: RootState) => state.customers.value
-  );
+  const [balanceInput, setBalanceInput] = useState(0);
+  const [stateInput, setStateInput] = useState("ADD");
 
   const dispatch = useDispatch();
 
+  const balance = useSelector(
+    (state: RootState) => state.balance
+  );
+
+  const transactions = useSelector((state: RootState) =>state.transactions.value );
+
+  console.log(transactions)
+
   const handleAddReservations = () => {
-    if (!reservationNameInput) return;
-    dispatch(addReservation(reservationNameInput));
-    setReservationNameInput("");
+    if (!balanceInput) return;
+    dispatch(addBalance(balanceInput));
+    setBalanceInput(0);
+    dispatch(addTransaction({id: uuidv4(), balance: balanceInput.toString(), state: stateInput}))
+  };
+
+  const handleRemoveReservations = () => {
+    setStateInput(()=>"REMOVE")
+    if (!balanceInput) return;
+    dispatch(deduceBalance(balanceInput));
+    setBalanceInput(0);
+    dispatch(addTransaction({id: uuidv4(), balance: balanceInput.toString(), state: stateInput}))
   };
 
   return (
     <div className="App">
+      <h1>Expense Tracker - Basic</h1>
       <div className="container">
-        <div className="reservation-container">
+        <div className="balance-container">
           <div>
-            <h5 className="reservation-header">Reservations</h5>
-            <div className="reservation-cards-container">
-              {resevartions.map((reservation, index) => (
-                <ResevartionCard name={reservation} index={index} key={index} />
-              ))}
-            </div>
+            <h5 className="balance-header">Balance : {balance || 0}</h5>
           </div>
-          <div className="reservation-input-container">
+          <div className="balance-input-container">
             <input
-              value={reservationNameInput}
+              type="number"
+              value={balanceInput}
               onChange={(e) => {
-                setReservationNameInput(() => e.target.value);
+                setBalanceInput(() => parseInt(e.target.value));
               }}
             />
+            <br />
             <button onClick={handleAddReservations}>Add</button>
+            <button onClick={handleRemoveReservations}>Remove</button>
           </div>
         </div>
-        <div className="customer-food-container">
-          {customers.map(customer => <CustomerCard {...customer} key={customer.id} />
-           )}
+        <div className="transaction-container">
+          <div className="h5header">
+            <h5>Transcations:</h5>
+              {transactions.map((transaction) => (
+              <TranscationCard {...transaction} key={transaction.id} />
+            ))}  
+          </div>
         </div>
       </div>
     </div>
