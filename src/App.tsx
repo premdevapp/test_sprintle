@@ -10,8 +10,6 @@ import "./App.css";
 
 function App() {
   const [balanceInput, setBalanceInput] = useState(0);
-  const [stateInput, setStateInput] = useState("ADD");
-
   const dispatch = useDispatch();
 
   const balance = useSelector(
@@ -26,15 +24,14 @@ function App() {
     if (!balanceInput) return;
     dispatch(addBalance(balanceInput));
     setBalanceInput(0);
-    dispatch(addTransaction({id: uuidv4(), balance: balanceInput.toString(), state: stateInput}))
+    dispatch(addTransaction({id: uuidv4(), balance: balanceInput.toString(), state: "ADD"}))
   };
 
   const handleRemoveReservations = () => {
-    setStateInput(()=>"REMOVE")
     if (!balanceInput) return;
     dispatch(deduceBalance(balanceInput));
     setBalanceInput(0);
-    dispatch(addTransaction({id: uuidv4(), balance: balanceInput.toString(), state: stateInput}))
+    dispatch(addTransaction({id: uuidv4(), balance: balanceInput.toString(), state: "REMOVE"}))
   };
 
   return (
